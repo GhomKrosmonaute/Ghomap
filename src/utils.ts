@@ -22,8 +22,10 @@ export function parse<T>(raw: string): T {
   return JSON.parse(raw)
 }
 
+export type Key = string
+
 /** lock keys to be formatted in kebab-case. */
-export function validateKey(key: string): string {
-  if (/^[a-z][a-z-]*[a-z]$/.test(key)) return key
-  throw new Error("provided key must be formatted in kebab-case")
+export function validateKey(key: string): key is Key {
+  if (/^[a-z][a-z-]*[a-z]$/.test(key)) return true
+  else throw new Error("provided key must be formatted in kebab-case")
 }

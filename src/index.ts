@@ -3,7 +3,13 @@ import fs from "fs"
 import fsp from "fs/promises"
 import * as utils from "./utils"
 
-class Ghomap<T> {
+export interface Options {
+  fetchAll?: boolean
+  cached?: boolean
+  name?: utils.Key
+}
+
+class Ghomap<T> implements Options {
   static path = path.join(utils.root, "data")
 
   static setPath(_path: string): string {
@@ -11,46 +17,104 @@ class Ghomap<T> {
     return this.path
   }
 
-  private cache = new Set<string>()
+  private cache = new Map<string, T>()
 
-  constructor(public readonly name: string = "default") {}
+  /**
+   * The name of database <br>
+   * default: `"default"`
+   */
+  public name: utils.Key
+  /**
+   * Use cache or not ? <br>
+   * default: `true`
+   */
+  public cached: boolean
+  /**
+   * Fetch all on start or not ? <br>
+   * default: `true`
+   */
+  public fetchAll: boolean
 
-  async open() {
+  constructor(options: Options | string = "default") {
+    if (typeof options === "string") {
+      utils.validateKey(options)
+      this.name = options
+      this.cached = true
+      this.fetchAll = true
+    } else {
+      this.cached = options.cached ?? true
+      this.fetchAll = options.fetchAll ?? true
+      const name = options.name ?? "default"
+      utils.validateKey(name)
+      this.name = name
+    }
+  }
+
+  async open(
+    callback?: (key: string, value: T) => unknown
+  ): Promise<Map<string, T>> {
     await utils.ensureDir(Ghomap.path)
     await utils.ensureDir(this.path)
-    this.cache = new Set(
-      (await fsp.readdir(this.path))
-        .filter((filename) => filename.endsWith(".json"))
-        .map((filename) => filename.slice(0, filename.lastIndexOf(".")))
-    )
+    if (this.fetchAll && this.cached) {
+      const dir = await fsp.readdir(this.path)
+      for (const filename of dir) {
+        if (filename.endsWith(".json")) {
+          const key = path.basename(filename, ".json")
+          const value = await this.get(key)
+          if (value !== null) {
+            this.cache.set(key, value)
+            callback?.(key, value)
+          }
+        }
+      }
+    }
+    return this.cache
   }
 
   async delete(key: string) {
     if (!fs.existsSync(this.filepath(key))) return
     await fsp.unlink(this.filepath(key))
-    this.cache.delete(key)
+    if (this.cached) this.cache.delete(key)
   }
 
   async deleteAll() {
-    for (const key of [...this.cache]) {
-      await this.delete(key)
+    if (this.cached) {
+      for (const [key] of [...this.cache]) {
+        await this.delete(key)
+      }
+    } else {
+      const dir = await fsp.readdir(this.path)
+      for (const filename of dir) {
+        if (filename.endsWith(".json")) {
+          const key = path.basename(filename, ".json")
+          const value = await this.get(key)
+          if (value !== null) {
+            this.cache.set(key, value)
+          }
+        }
+      }
     }
   }
 
-  async set(key: string, data: T) {
+  async set(key: string, data: T): Promise<T> {
+    utils.validateKey(key)
     const raw = utils.stringify(data)
     await fsp.writeFile(this.filepath(key), raw, "utf-8")
-    this.cache.add(key)
+    if (this.cached) this.cache.set(key, data)
+    return data
   }
 
-  async get(key: string): Promise<T | undefined> {
-    if (!fs.existsSync(this.filepath(key))) return undefined
+  async get(key: string): Promise<T | null> {
+    utils.validateKey(key)
+    if (this.cached) return this.cache.get(key) ?? null
+    if (!fs.existsSync(this.filepath(key))) return null
     const raw = await fsp.readFile(this.filepath(key), "utf-8")
-    return utils.parse<T>(raw)
+    return utils.parse<T>(raw) ?? null
   }
 
   async ensure(key: string, defaultValue: T): Promise<T> {
-    return (await this.get(key)) ?? defaultValue
+    const data = await this.get(key)
+    return data ?? (await this.set(key, defaultValue))
   }
 
   filepath(key: string): string {
