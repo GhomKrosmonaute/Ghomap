@@ -1,4 +1,7 @@
 .idea
 .vscode
 node_modules
+test
+test.js
 src
+jest.config.js
