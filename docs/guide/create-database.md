@@ -1,5 +1,5 @@
 ---
-premalink: /Guide/CreateDatabase
+premalink: /Guide/CreateDatabase/
 ---
 
 # Create Database

@@ -1,5 +1,5 @@
 ---
-premalink: /Guide
+premalink: /Guide/
 ---
 
 # Guide

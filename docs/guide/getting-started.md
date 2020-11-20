@@ -1,5 +1,5 @@
 ---
-premalink: /Guide/GettingStarted
+premalink: /Guide/GettingStarted/
 ---
 
 # Getting Started

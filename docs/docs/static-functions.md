@@ -1,5 +1,5 @@
 ---
-premalink: /Docs/StaticFunctions
+premalink: /Docs/StaticFunctions/
 ---
 
 # Static Functions

@@ -1,5 +1,5 @@
 ---
-premalink: /Docs
+premalink: /Docs/
 ---
 
 # Docs
