@@ -2,7 +2,7 @@
   "name": "ghomap",
   "author": "ghom",
   "license": "ISC",
-  "version": "0.0.1",
+  "version": "0.0.1-test",
   "description": "Enmap like using json files in local",
   "main": "dist/index.js",
   "types": "dist",
