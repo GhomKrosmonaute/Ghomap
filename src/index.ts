@@ -77,19 +77,28 @@ class Ghomap<T> implements Options {
     if (this.cached) this.cache.delete(key)
   }
 
-  async deleteAll() {
+  deleteAll(): Promise<void> {
+    return this.forEach((data, key) => this.delete(key))
+  }
+
+  async count(): Promise<number> {
+    if (this.cached) return this.cache.size
+    return await fsp.readdir(this.path).then((filenames) => filenames.length)
+  }
+
+  async forEach(callback: (data: T, key: utils.Key) => unknown): Promise<void> {
     if (this.cached) {
-      for (const [key] of [...this.cache]) {
-        await this.delete(key)
+      for (const [key, data] of [...this.cache]) {
+        await callback(data, key)
       }
     } else {
       const dir = await fsp.readdir(this.path)
       for (const filename of dir) {
         if (filename.endsWith(".json")) {
           const key = path.basename(filename, ".json")
-          const value = await this.get(key)
-          if (value !== null) {
-            this.cache.set(key, value)
+          const data = await this.get(key)
+          if (data !== null) {
+            await callback(data, key)
           }
         }
       }
