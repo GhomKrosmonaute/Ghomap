@@ -10,14 +10,14 @@
 ## Remove unit test system (jest) ?
 
 1. Remove this files from project and from `prettier` script in package.json:
-    - `jest.config.js`
-    - `test.js`
+   - `jest.config.js`
+   - `test.js`
 2. Remove `test` script from package.json and from `build` script.
 3. Run `npm remove --purge jest`.
 
 ## Use npm CLI instead of yarn ?
 
-¯\_(ツ)_/¯   
+¯\_(ツ)\_/¯  
 bad move.
 
 ## Some detail
