@@ -60,6 +60,14 @@ test("get undefined data", async () => {
 test("set and get array data", async () => {
   await db.set("array", [42])
   await db.push("array", 66)
+
+  expect(await db.includes("array", 42)).toBe(true)
+  expect(await db.includes("array", 66)).toBe(true)
+  expect(await db.includes("array", 33)).toBe(false)
+
+  await db.pop("array")
+
+  expect(await db.includes("array", 66)).toBe(false)
 })
 
 test("destroy database", async () => {
