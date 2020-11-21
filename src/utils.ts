@@ -24,7 +24,7 @@ export function parse<T>(raw: string): T {
 export type Key = string
 
 export function validateKey(key: string): key is Key {
-  if (/^[^\s]$/.test(key) && key.length > 3 && key.length < 64) return true
+  if (/^[^\s]+$/.test(key) && key.length > 3 && key.length < 64) return true
   else throw new Error("invalid provided key")
 }
 
