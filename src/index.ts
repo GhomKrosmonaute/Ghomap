@@ -56,7 +56,7 @@ class Ghomap<T = any> implements Options {
 
   public async open(
     callback?: (key: utils.Key, value: T) => unknown
-  ): Promise<Map<utils.Key, T>> {
+  ): Promise<void> {
     await utils.ensureDir(Ghomap.path)
     await utils.ensureDir(this.path)
     if (this.fetchAllOnStart && this.useCache) {
@@ -73,7 +73,6 @@ class Ghomap<T = any> implements Options {
       }
     }
     this.ready = true
-    return this.cache
   }
 
   public async destroy(): Promise<void> {
@@ -115,14 +114,6 @@ class Ghomap<T = any> implements Options {
     return await fsp.readdir(this.path).then((filenames) => filenames.length)
   }
 
-  public async forEach(callback: (data: T, key: utils.Key) => unknown): Promise<void> {
-    this.checkReady("forEach()")
-    const list = this.useCache ? this.cache : await this.fetchAll()
-    for (const [key, data] of [...list]) {
-      await callback(data, key)
-    }
-  }
-
   public async set(key: utils.Key, data: T): Promise<T> {
     this.checkReady("set()")
     utils.validateKey(key)
@@ -147,7 +138,129 @@ class Ghomap<T = any> implements Options {
     return data ?? (await this.set(key, defaultValue))
   }
 
+  public async push<I = any>(key: utils.Key, item: I): Promise<I> {
+    this.checkReady("push()")
+    const data = await this.get(key)
+    if (data instanceof Array) {
+      data.push(item)
+      return item
+    }
+    throw new Error("the push() function must bu used on Array value.")
+  }
+
+  public async unshift<I = any>(key: utils.Key, item: I): Promise<I> {
+    this.checkReady("unshift()")
+    const data = await this.get(key)
+    if (data instanceof Array) {
+      data.unshift(item)
+      return item
+    }
+    throw new Error("the unshift() function must bu used on Array value.")
+  }
+
+  public async pop<I = any>(key: utils.Key): Promise<I> {
+    this.checkReady("pop()")
+    const data = await this.get(key)
+    if (data instanceof Array) {
+      return data.pop()
+    }
+    throw new Error("the pop() function must bu used on Array value.")
+  }
+
+  public async shift<I = any>(key: utils.Key): Promise<I> {
+    this.checkReady("shift()")
+    const data = await this.get(key)
+    if (data instanceof Array) {
+      return data.shift()
+    }
+    throw new Error("the shift() function must bu used on Array value.")
+  }
+
+  public async forEach(
+    callback: (data: T, key: utils.Key) => unknown
+  ): Promise<void> {
+    this.checkReady("forEach()")
+    const entries = this.useCache ? this.cache : await this.fetchAll()
+    for (const [key, data] of [...entries]) {
+      await callback(data, key)
+    }
+  }
+
+  public async map<R>(
+    callback: (data: T, key: utils.Key) => R | Promise<R>
+  ): Promise<R[]> {
+    this.checkReady("map()")
+    const entries = this.useCache ? this.cache : await this.fetchAll()
+    const output: R[] = []
+    for (const [key, data] of [...entries]) {
+      output.push(await callback(data, key))
+    }
+    return output
+  }
+
+  public async some(
+    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
+  ): Promise<boolean> {
+    this.checkReady("some()")
+    const entries = this.useCache ? this.cache : await this.fetchAll()
+    for (const [key, data] of [...entries]) {
+      if (await callback(data, key)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  public async every(
+    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
+  ): Promise<boolean> {
+    this.checkReady("every()")
+    return !(await this.some(callback))
+  }
+
+  public async filter(
+    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
+  ): Promise<Map<utils.Key, T>> {
+    this.checkReady("filter()")
+    const entries = this.useCache ? this.cache : await this.fetchAll()
+    const output = new Map<utils.Key, T>()
+    for (const [key, data] of [...entries]) {
+      if (await callback(data, key)) {
+        output.set(key, data)
+      }
+    }
+    return output
+  }
+
+  public async filterArray(
+    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
+  ): Promise<T[]> {
+    this.checkReady("filterArray()")
+    const entries = this.useCache ? this.cache : await this.fetchAll()
+    const output: T[] = []
+    for (const [key, data] of [...entries]) {
+      if (await callback(data, key)) {
+        output.push(data)
+      }
+    }
+    return output
+  }
+
+  public async find(
+    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
+  ): Promise<T | null> {
+    this.checkReady("find()")
+    const entries = this.useCache ? this.cache : await this.fetchAll()
+    for (const [key, data] of [...entries]) {
+      if (await callback(data, key)) {
+        return data
+      }
+    }
+    return null
+  }
+
   public fetchAll(): Promise<Map<utils.Key, T>> {
+    this.checkReady("fetchAll()")
     return this.fetchKeys().then(async (keys) => {
       const entries = new Map<utils.Key, T>()
       for (const key of keys) {
@@ -159,12 +272,14 @@ class Ghomap<T = any> implements Options {
   }
 
   public fetchValues(): Promise<T[]> {
+    this.checkReady("fetchValues()")
     return this.fetchAll().then((entries) =>
       Array.from(entries).map((entry) => entry[1])
     )
   }
 
   public fetchKeys(): Promise<utils.Key[]> {
+    this.checkReady("fetchKeys()")
     return fsp.readdir(this.path).then(async (filenames) => {
       const keys: utils.Key[] = []
       for (const filename of filenames) {
