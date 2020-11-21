@@ -4,6 +4,15 @@ const Ghomap = require("./dist/index")
 
 const db = new Ghomap()
 
+test("use database before init", async () => {
+  try {
+    await db.set("something", true)
+    expect(false).toBeTruthy()
+  } catch (error) {
+    expect(true).toBeTruthy()
+  }
+})
+
 test("init database", async () => {
   await db.open()
 

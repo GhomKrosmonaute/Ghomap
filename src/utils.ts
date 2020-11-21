@@ -28,3 +28,23 @@ export function validateKey(key: string): key is Key {
   if (/^[a-z][a-z-]*[a-z]$/.test(key)) return true
   else throw new Error("provided key must be formatted in kebab-case")
 }
+
+export function checkReady() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const original = descriptor.value
+    descriptor.value = function (...args: any[]) {
+      // @ts-ignore
+      if (this.isReady) {
+        return original.apply(this, args)
+      } else {
+        throw new Error(
+          `the database must be ready to use this feature: ${propertyKey}()`
+        )
+      }
+    }
+  }
+}
