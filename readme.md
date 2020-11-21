@@ -81,4 +81,4 @@ Ghomap.openAll().then(async () => {
 })
 ```
 
-- [API documentation](https://CamilleAbella.github.io/Ghomap)
+- [API documentation](http://163.172.176.138:4224)
