@@ -4,12 +4,12 @@ import fsp from "fs/promises"
 import * as utils from "./utils"
 
 export interface Options {
-  fetchAll?: boolean
-  cached?: boolean
+  fetchAllOnStart?: boolean
+  useCache?: boolean
   name?: utils.Key
 }
 
-class Ghomap<T> implements Options {
+class Ghomap<T = any> implements Options {
   static path = path.join(utils.root, "data")
 
   static setPath(_path: string): string {
@@ -17,10 +17,10 @@ class Ghomap<T> implements Options {
     return this.path
   }
 
-  private cache = new Map<string, T>()
+  private cache = new Map<utils.Key, T>()
 
   /**
-   * The name of database <br>
+   * The name of database in case of multiple databases used <br>
    * default: `"default"`
    */
   public name: utils.Key
@@ -28,22 +28,22 @@ class Ghomap<T> implements Options {
    * Use cache or not ? <br>
    * default: `true`
    */
-  public cached: boolean
+  public useCache: boolean
   /**
    * Fetch all on start or not ? <br>
    * default: `true`
    */
-  public fetchAll: boolean
+  public fetchAllOnStart: boolean
 
-  constructor(options: Options | string = "default") {
+  constructor(options: Options | utils.Key = "default") {
     if (typeof options === "string") {
       utils.validateKey(options)
       this.name = options
-      this.cached = true
-      this.fetchAll = true
+      this.useCache = true
+      this.fetchAllOnStart = true
     } else {
-      this.cached = options.cached ?? true
-      this.fetchAll = options.fetchAll ?? true
+      this.useCache = options.useCache ?? true
+      this.fetchAllOnStart = options.fetchAllOnStart ?? true
       const name = options.name ?? "default"
       utils.validateKey(name)
       this.name = name
@@ -55,7 +55,7 @@ class Ghomap<T> implements Options {
   ): Promise<Map<string, T>> {
     await utils.ensureDir(Ghomap.path)
     await utils.ensureDir(this.path)
-    if (this.fetchAll && this.cached) {
+    if (this.fetchAllOnStart && this.useCache) {
       const dir = await fsp.readdir(this.path)
       for (const filename of dir) {
         if (filename.endsWith(".json")) {
@@ -74,7 +74,15 @@ class Ghomap<T> implements Options {
   async delete(key: string) {
     if (!fs.existsSync(this.filepath(key))) return
     await fsp.unlink(this.filepath(key))
-    if (this.cached) this.cache.delete(key)
+    if (this.useCache) this.cache.delete(key)
+  }
+
+  async random(): Promise<T | null> {
+    const keys = this.useCache
+      ? Array.from(this.cache.keys())
+      : await this.fetchKeys()
+    if (keys.length === 0) return null
+    return this.get(keys[Math.floor(Math.random() * keys.length)])
   }
 
   deleteAll(): Promise<void> {
@@ -82,26 +90,14 @@ class Ghomap<T> implements Options {
   }
 
   async count(): Promise<number> {
-    if (this.cached) return this.cache.size
+    if (this.useCache) return this.cache.size
     return await fsp.readdir(this.path).then((filenames) => filenames.length)
   }
 
   async forEach(callback: (data: T, key: utils.Key) => unknown): Promise<void> {
-    if (this.cached) {
-      for (const [key, data] of [...this.cache]) {
-        await callback(data, key)
-      }
-    } else {
-      const dir = await fsp.readdir(this.path)
-      for (const filename of dir) {
-        if (filename.endsWith(".json")) {
-          const key = path.basename(filename, ".json")
-          const data = await this.get(key)
-          if (data !== null) {
-            await callback(data, key)
-          }
-        }
-      }
+    const list = this.useCache ? this.cache : await this.fetchAll()
+    for (const [key, data] of [...list]) {
+      await callback(data, key)
     }
   }
 
@@ -109,13 +105,13 @@ class Ghomap<T> implements Options {
     utils.validateKey(key)
     const raw = utils.stringify(data)
     await fsp.writeFile(this.filepath(key), raw, "utf-8")
-    if (this.cached) this.cache.set(key, data)
+    if (this.useCache) this.cache.set(key, data)
     return data
   }
 
   async get(key: string): Promise<T | null> {
     utils.validateKey(key)
-    if (this.cached) return this.cache.get(key) ?? null
+    if (this.useCache) return this.cache.get(key) ?? null
     if (!fs.existsSync(this.filepath(key))) return null
     const raw = await fsp.readFile(this.filepath(key), "utf-8")
     return utils.parse<T>(raw) ?? null
@@ -128,6 +124,35 @@ class Ghomap<T> implements Options {
 
   filepath(key: string): string {
     return path.join(this.path, key) + ".json"
+  }
+
+  fetchAll(): Promise<Map<utils.Key, T>> {
+    return this.fetchKeys().then(async (keys) => {
+      const entries = new Map<utils.Key, T>()
+      for (const key of keys) {
+        const data = await this.get(key)
+        if (data !== null) entries.set(key, data)
+      }
+      return entries
+    })
+  }
+
+  fetchValues(): Promise<T[]> {
+    return this.fetchAll().then((entries) =>
+      Array.from(entries).map((entry) => entry[1])
+    )
+  }
+
+  fetchKeys(): Promise<utils.Key[]> {
+    return fsp.readdir(this.path).then(async (filenames) => {
+      const keys: utils.Key[] = []
+      for (const filename of filenames) {
+        if (filename.endsWith(".json")) {
+          keys.push(path.basename(filename, ".json"))
+        }
+      }
+      return keys
+    })
   }
 
   get path(): string {
