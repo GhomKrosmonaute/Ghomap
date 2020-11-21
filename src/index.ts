@@ -79,6 +79,7 @@ class Ghomap<T = any> implements Options {
     this.checkReady("destroy()")
     await this.deleteAll()
     await fsp.rmdir(this.path)
+    this.ready = false
   }
 
   public async delete(key: utils.Key) {
@@ -138,12 +139,12 @@ class Ghomap<T = any> implements Options {
     return data ?? (await this.set(key, defaultValue))
   }
 
-  public async push<I = any>(key: utils.Key, item: I): Promise<I> {
+  public async push<I = any>(key: utils.Key, ...items: I[]): Promise<I[]> {
     this.checkReady("push()")
     const data = await this.get(key)
     if (data instanceof Array) {
-      data.push(item)
-      return item
+      data.push(...items)
+      return items
     }
     throw new Error("the push() function must bu used on Array value.")
   }
@@ -174,6 +175,15 @@ class Ghomap<T = any> implements Options {
       return data.shift()
     }
     throw new Error("the shift() function must bu used on Array value.")
+  }
+
+  public async includes(key: utils.Key, item: any): Promise<boolean> {
+    this.checkReady("includes()")
+    const data = await this.get(key)
+    if (data instanceof Array) {
+      return data.includes(item)
+    }
+    throw new Error("the includes() function must bu used on Array value.")
   }
 
   public async forEach(

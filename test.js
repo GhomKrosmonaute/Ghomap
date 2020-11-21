@@ -7,6 +7,7 @@ const db = new Ghomap()
 test("init database", async () => {
   await db.open()
 
+  expect(db.isReady).toBe(true)
   expect(fs.existsSync(path.join(__dirname, "data", "default"))).toBe(true)
 })
 
@@ -54,4 +55,15 @@ test("get undefined data", async () => {
   const entries = await db.fetchAll()
 
   expect(entries.size).toBe(0)
+})
+
+test("set and get array data", async () => {
+  await db.set("array", [42])
+  await db.push("array", 66)
+})
+
+test("destroy database", async () => {
+  await db.destroy()
+
+  expect(db.isReady).toBe(false)
 })
