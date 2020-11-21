@@ -145,6 +145,7 @@ class Ghomap<T = any> implements Options {
     const data = await this.get(key)
     if (data instanceof Array) {
       data.push(...items)
+      await this.set(key, data)
       return items
     }
     throw new Error("the push() function must bu used on Array value.")
@@ -155,6 +156,7 @@ class Ghomap<T = any> implements Options {
     const data = await this.get(key)
     if (data instanceof Array) {
       data.unshift(item)
+      await this.set(key, data)
       return item
     }
     throw new Error("the unshift() function must bu used on Array value.")
@@ -164,7 +166,9 @@ class Ghomap<T = any> implements Options {
   public async pop<I = any>(key: utils.Key): Promise<I> {
     const data = await this.get(key)
     if (data instanceof Array) {
-      return data.pop()
+      const pop = data.pop()
+      await this.set(key, data)
+      return pop
     }
     throw new Error("the pop() function must bu used on Array value.")
   }
@@ -173,7 +177,9 @@ class Ghomap<T = any> implements Options {
   public async shift<I = any>(key: utils.Key): Promise<I> {
     const data = await this.get(key)
     if (data instanceof Array) {
-      return data.shift()
+      const shift = data.shift()
+      await this.set(key, data)
+      return shift
     }
     throw new Error("the shift() function must bu used on Array value.")
   }
