@@ -2,7 +2,7 @@
   "name": "ghomap",
   "author": "ghom",
   "license": "ISC",
-  "version": "0.1.2-alpha",
+  "version": "0.1.3-alpha",
   "description": "Enmap like using json files in local",
   "main": "dist/index.js",
   "types": "dist",
@@ -15,7 +15,8 @@
   },
   "scripts": {
     "prettier": "prettier src test.js jest.config.js package.json readme.md tsconfig.json --write",
-    "build": "del-cli dist/** -d && tsc",
+    "build": "del-cli dist/** -d && tsc && npm run build:docs",
+    "build:docs": "typedoc --excludeNotDocumented --exclude src/utils.ts --name Documentation --out docs/ src/",
     "prepublish": "npm run prettier && npm test",
     "test": "npm run build && jest"
   },
@@ -37,6 +38,7 @@
     "del-cli": "^3.0.1",
     "jest": "^26.4.2",
     "prettier": "^2.0.5",
+    "typedoc": "^0.19.2",
     "typescript": "^4.0.2"
   },
   "dependencies": {}

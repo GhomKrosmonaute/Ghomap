@@ -23,10 +23,9 @@ export function parse<T>(raw: string): T {
 
 export type Key = string
 
-/** lock keys to be formatted in kebab-case. */
 export function validateKey(key: string): key is Key {
-  if (/^[a-z][a-z-]*[a-z]$/.test(key)) return true
-  else throw new Error("provided key must be formatted in kebab-case")
+  if (/^[^\s]$/.test(key) && key.length > 3 && key.length < 64) return true
+  else throw new Error("invalid provided key")
 }
 
 export function checkReady() {
@@ -46,5 +45,11 @@ export function checkReady() {
         )
       }
     }
+  }
+}
+
+export class TargetTypeError extends TypeError {
+  constructor(functionName: string) {
+    super(`the ${functionName}() function must bu used on Array data.`)
   }
 }

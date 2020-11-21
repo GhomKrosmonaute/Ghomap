@@ -1,5 +1,0 @@
----
-premalink: /Docs/Functions/
----
-
-# Functions
