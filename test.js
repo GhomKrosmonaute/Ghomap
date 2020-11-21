@@ -14,7 +14,7 @@ test("set data", async () => {
   await db.set("set-data", true)
 
   expect(
-    fs.existsSync(path.join(__dirname, "data", "default", "key.json"))
+    fs.existsSync(path.join(__dirname, "data", "default", "set-data.json"))
   ).toBe(true)
 })
 

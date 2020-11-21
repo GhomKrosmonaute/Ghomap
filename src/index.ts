@@ -11,6 +11,7 @@ export interface Options {
 
 class Ghomap<T = any> implements Options {
   static path = path.join(utils.root, "data")
+  static instances = new Set<Ghomap>()
 
   static setPath(_path: string): string {
     this.path = path.resolve(utils.root, _path)
@@ -35,6 +36,8 @@ class Ghomap<T = any> implements Options {
    */
   public fetchAllOnStart: boolean
 
+  private ready: boolean = false
+
   constructor(options: Options | utils.Key = "default") {
     if (typeof options === "string") {
       utils.validateKey(options)
@@ -48,11 +51,12 @@ class Ghomap<T = any> implements Options {
       utils.validateKey(name)
       this.name = name
     }
+    Ghomap.instances.add(this)
   }
 
-  async open(
-    callback?: (key: string, value: T) => unknown
-  ): Promise<Map<string, T>> {
+  public async open(
+    callback?: (key: utils.Key, value: T) => unknown
+  ): Promise<Map<utils.Key, T>> {
     await utils.ensureDir(Ghomap.path)
     await utils.ensureDir(this.path)
     if (this.fetchAllOnStart && this.useCache) {
@@ -68,16 +72,30 @@ class Ghomap<T = any> implements Options {
         }
       }
     }
+    this.ready = true
     return this.cache
   }
 
-  async delete(key: string) {
+  public async destroy(): Promise<void> {
+    this.checkReady("destroy()")
+    await this.deleteAll()
+    await fsp.rmdir(this.path)
+  }
+
+  public async delete(key: utils.Key) {
+    this.checkReady("delete()")
     if (!fs.existsSync(this.filepath(key))) return
     await fsp.unlink(this.filepath(key))
     if (this.useCache) this.cache.delete(key)
   }
 
-  async random(): Promise<T | null> {
+  public deleteAll(): Promise<void> {
+    this.checkReady("deleteAll()")
+    return this.forEach((data, key) => this.delete(key))
+  }
+
+  public async random(): Promise<T | null> {
+    this.checkReady("random()")
     const keys = this.useCache
       ? Array.from(this.cache.keys())
       : await this.fetchKeys()
@@ -85,23 +103,28 @@ class Ghomap<T = any> implements Options {
     return this.get(keys[Math.floor(Math.random() * keys.length)])
   }
 
-  deleteAll(): Promise<void> {
-    return this.forEach((data, key) => this.delete(key))
+  public has(key: utils.Key): boolean {
+    this.checkReady("has()")
+    if (this.useCache) return this.cache.has(key)
+    return fs.existsSync(this.filepath(key))
   }
 
-  async count(): Promise<number> {
+  public async count(): Promise<number> {
+    this.checkReady("count()")
     if (this.useCache) return this.cache.size
     return await fsp.readdir(this.path).then((filenames) => filenames.length)
   }
 
-  async forEach(callback: (data: T, key: utils.Key) => unknown): Promise<void> {
+  public async forEach(callback: (data: T, key: utils.Key) => unknown): Promise<void> {
+    this.checkReady("forEach()")
     const list = this.useCache ? this.cache : await this.fetchAll()
     for (const [key, data] of [...list]) {
       await callback(data, key)
     }
   }
 
-  async set(key: string, data: T): Promise<T> {
+  public async set(key: utils.Key, data: T): Promise<T> {
+    this.checkReady("set()")
     utils.validateKey(key)
     const raw = utils.stringify(data)
     await fsp.writeFile(this.filepath(key), raw, "utf-8")
@@ -109,7 +132,8 @@ class Ghomap<T = any> implements Options {
     return data
   }
 
-  async get(key: string): Promise<T | null> {
+  public async get(key: utils.Key): Promise<T | null> {
+    this.checkReady("get()")
     utils.validateKey(key)
     if (this.useCache) return this.cache.get(key) ?? null
     if (!fs.existsSync(this.filepath(key))) return null
@@ -117,16 +141,13 @@ class Ghomap<T = any> implements Options {
     return utils.parse<T>(raw) ?? null
   }
 
-  async ensure(key: string, defaultValue: T): Promise<T> {
+  public async ensure(key: utils.Key, defaultValue: T): Promise<T> {
+    this.checkReady("ensure()")
     const data = await this.get(key)
     return data ?? (await this.set(key, defaultValue))
   }
 
-  filepath(key: string): string {
-    return path.join(this.path, key) + ".json"
-  }
-
-  fetchAll(): Promise<Map<utils.Key, T>> {
+  public fetchAll(): Promise<Map<utils.Key, T>> {
     return this.fetchKeys().then(async (keys) => {
       const entries = new Map<utils.Key, T>()
       for (const key of keys) {
@@ -137,13 +158,13 @@ class Ghomap<T = any> implements Options {
     })
   }
 
-  fetchValues(): Promise<T[]> {
+  public fetchValues(): Promise<T[]> {
     return this.fetchAll().then((entries) =>
       Array.from(entries).map((entry) => entry[1])
     )
   }
 
-  fetchKeys(): Promise<utils.Key[]> {
+  public fetchKeys(): Promise<utils.Key[]> {
     return fsp.readdir(this.path).then(async (filenames) => {
       const keys: utils.Key[] = []
       for (const filename of filenames) {
@@ -155,8 +176,24 @@ class Ghomap<T = any> implements Options {
     })
   }
 
-  get path(): string {
+  get isReady(): boolean {
+    return this.ready
+  }
+
+  private get path(): string {
     return path.join(Ghomap.path, this.name)
+  }
+
+  private filepath(key: string): string {
+    return path.join(this.path, key) + ".json"
+  }
+
+  private checkReady(featureName: string) {
+    if (!this.ready) {
+      throw new Error(
+        `the database must be ready to use this feature: ${featureName}`
+      )
+    }
   }
 }
 
