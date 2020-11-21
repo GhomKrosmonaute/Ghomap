@@ -64,7 +64,8 @@ class Ghomap<T = any> implements Options {
       for (const filename of dir) {
         if (filename.endsWith(".json")) {
           const key = path.basename(filename, ".json")
-          const value = await this.get(key)
+          const raw = await fsp.readFile(this.filepath(key), "utf-8")
+          const value = utils.parse<T>(raw) ?? null
           if (value !== null) {
             this.cache.set(key, value)
             callback?.(key, value)
