@@ -7,11 +7,13 @@ import * as utils from "./utils"
  * The Ghomap constructor options
  *
  * @property fetchAllOnStart - The setter of {@link Ghomap.fetchAllOnStart}
+ * @property cacheOnly - The setter of {@link Ghomap.cacheOnly}
  * @property useCache - The setter of {@link Ghomap.useCache}
  * @property name - The setter of {@link Ghomap.name}
  */
 export interface Options {
   fetchAllOnStart?: boolean
+  cacheOnly?: boolean
   useCache?: boolean
   name?: Key
 }
@@ -88,6 +90,19 @@ class Ghomap<T = any> implements Options {
   public useCache: boolean
 
   /**
+   * Use cache only, make the database not persistent.
+   *
+   * @remarks
+   * Deactivate this flag if you don't have enough RAM on your server
+   *
+   * @default {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Boolean true}
+   *
+   * @beta
+   * @experimental
+   */
+  public cacheOnly: boolean
+
+  /**
    * Fetch all data on {@link open} called and fill cache
    *
    * @remarks
@@ -109,13 +124,18 @@ class Ghomap<T = any> implements Options {
       utils.validateKey(options)
       this.name = options
       this.useCache = true
+      this.cacheOnly = false
       this.fetchAllOnStart = true
     } else {
       this.useCache = options.useCache ?? true
+      this.cacheOnly = options.cacheOnly ?? false
       this.fetchAllOnStart = options.fetchAllOnStart ?? true
       const name = options.name ?? "default"
       utils.validateKey(name)
       this.name = name
+    }
+    if (this.cacheOnly) {
+      this.ready = true
     }
     Ghomap.instances.add(this)
   }
@@ -129,18 +149,20 @@ class Ghomap<T = any> implements Options {
    * @param callback
    */
   public async open(callback?: (key: Key, value: T) => unknown): Promise<void> {
-    await utils.ensureDir(Ghomap.path)
-    await utils.ensureDir(this.path)
-    if (this.fetchAllOnStart && this.useCache) {
-      const dir = await fsp.readdir(this.path)
-      for (const filename of dir) {
-        if (filename.endsWith(".json")) {
-          const key = path.basename(filename, ".json")
-          const raw = await fsp.readFile(this.filepath(key), "utf-8")
-          const value = utils.parse<T>(raw) ?? null
-          if (value !== null) {
-            this.cache.set(key, value)
-            callback?.(key, value)
+    if (!this.cacheOnly) {
+      await utils.ensureDir(Ghomap.path)
+      await utils.ensureDir(this.path)
+      if (this.fetchAllOnStart && this.useCache) {
+        const dir = await fsp.readdir(this.path)
+        for (const filename of dir) {
+          if (filename.endsWith(".json")) {
+            const key = path.basename(filename, ".json")
+            const raw = await fsp.readFile(this.filepath(key), "utf-8")
+            const value = utils.parse<T>(raw) ?? null
+            if (value !== null) {
+              this.cache.set(key, value)
+              callback?.(key, value)
+            }
           }
         }
       }
@@ -165,6 +187,10 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async delete(key: Key): Promise<void> {
+    if (this.cacheOnly) {
+      this.cache.delete(key)
+      return
+    }
     if (!fs.existsSync(this.filepath(key))) return
     await fsp.unlink(this.filepath(key))
     if (this.useCache) this.cache.delete(key)
@@ -183,7 +209,7 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async random(): Promise<T | null> {
-    const keys = this.useCache
+    const keys = this.cacheUsed
       ? Array.from(this.cache.keys())
       : await this.fetchKeys()
     if (keys.length === 0) return null
@@ -198,7 +224,7 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public has(key: Key): boolean {
-    if (this.useCache) return this.cache.has(key)
+    if (this.cacheUsed) return this.cache.has(key)
     return fs.existsSync(this.filepath(key))
   }
 
@@ -209,7 +235,7 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async count(): Promise<number> {
-    if (this.useCache) return this.cache.size
+    if (this.cacheUsed) return this.cache.size
     return await fsp.readdir(this.path).then((filenames) => filenames.length)
   }
 
@@ -223,6 +249,10 @@ class Ghomap<T = any> implements Options {
   @utils.checkReady()
   public async set(key: Key, data: T): Promise<T> {
     utils.validateKey(key)
+    if (this.cacheOnly) {
+      this.cache.set(key, data)
+      return data
+    }
     const raw = utils.stringify(data)
     await fsp.writeFile(this.filepath(key), raw, "utf-8")
     if (this.useCache) this.cache.set(key, data)
@@ -238,7 +268,7 @@ class Ghomap<T = any> implements Options {
   @utils.checkReady()
   public async get(key: Key): Promise<T | null> {
     utils.validateKey(key)
-    if (this.useCache) return this.cache.get(key) ?? null
+    if (this.cacheUsed) return this.cache.get(key) ?? null
     if (!fs.existsSync(this.filepath(key))) return null
     const raw = await fsp.readFile(this.filepath(key), "utf-8")
     return utils.parse<T>(raw) ?? null
@@ -385,7 +415,7 @@ class Ghomap<T = any> implements Options {
   public async forEach(
     callback: (data: T, key: Key) => unknown
   ): Promise<void> {
-    const entries = this.useCache ? this.cache : await this.fetchAll()
+    const entries = this.cacheUsed ? this.cache : await this.fetchAll()
     for (const [key, data] of [...entries]) {
       await callback(data, key)
     }
@@ -407,7 +437,7 @@ class Ghomap<T = any> implements Options {
   public async map<R>(
     callback: (data: T, key: Key) => R | Promise<R>
   ): Promise<R[]> {
-    const entries = this.useCache ? this.cache : await this.fetchAll()
+    const entries = this.cacheUsed ? this.cache : await this.fetchAll()
     const output: R[] = []
     for (const [key, data] of [...entries]) {
       output.push(await callback(data, key))
@@ -431,7 +461,7 @@ class Ghomap<T = any> implements Options {
   public async some(
     callback: (data: T, key: Key) => boolean | Promise<boolean>
   ): Promise<boolean> {
-    const entries = this.useCache ? this.cache : await this.fetchAll()
+    const entries = this.cacheUsed ? this.cache : await this.fetchAll()
     for (const [key, data] of [...entries]) {
       if (await callback(data, key)) {
         return true
@@ -475,7 +505,7 @@ class Ghomap<T = any> implements Options {
   public async filter(
     callback: (data: T, key: Key) => boolean | Promise<boolean>
   ): Promise<Map<Key, T>> {
-    const entries = this.useCache ? this.cache : await this.fetchAll()
+    const entries = this.cacheUsed ? this.cache : await this.fetchAll()
     const output = new Map<Key, T>()
     for (const [key, data] of [...entries]) {
       if (await callback(data, key)) {
@@ -501,7 +531,7 @@ class Ghomap<T = any> implements Options {
   public async filterArray(
     callback: (data: T, key: Key) => boolean | Promise<boolean>
   ): Promise<T[]> {
-    const entries = this.useCache ? this.cache : await this.fetchAll()
+    const entries = this.cacheUsed ? this.cache : await this.fetchAll()
     const output: T[] = []
     for (const [key, data] of [...entries]) {
       if (await callback(data, key)) {
@@ -527,7 +557,7 @@ class Ghomap<T = any> implements Options {
   public async find(
     callback: (data: T, key: Key) => boolean | Promise<boolean>
   ): Promise<T | null> {
-    const entries = this.useCache ? this.cache : await this.fetchAll()
+    const entries = this.cacheUsed ? this.cache : await this.fetchAll()
     for (const [key, data] of [...entries]) {
       if (await callback(data, key)) {
         return data
@@ -571,7 +601,8 @@ class Ghomap<T = any> implements Options {
    * @returns All fetched keys
    */
   @utils.checkReady()
-  public fetchKeys(): Promise<Key[]> {
+  public async fetchKeys(): Promise<Key[]> {
+    if (this.cacheOnly) return Array.from(this.cache.keys())
     return fsp.readdir(this.path).then(async (filenames) => {
       const keys: Key[] = []
       for (const filename of filenames) {
@@ -593,6 +624,15 @@ class Ghomap<T = any> implements Options {
    */
   get isReady(): boolean {
     return this.ready
+  }
+
+  /**
+   * Check if the cache is used, returns {@link useCache} or {@link cacheOnly}
+   *
+   * @returns True if the cache is used
+   */
+  get cacheUsed(): boolean {
+    return this.useCache || this.cacheOnly
   }
 
   private get path(): string {

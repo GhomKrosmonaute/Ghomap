@@ -108,6 +108,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.ghomap.html#cacheonly" class="tsd-kind-icon">cache<wbr>Only</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.ghomap.html#fetchallonstart" class="tsd-kind-icon">fetch<wbr>All<wbr>OnStart</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.ghomap.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.ghomap.html#usecache" class="tsd-kind-icon">use<wbr>Cache</a></li>
@@ -118,6 +119,7 @@
 						<section class="tsd-index-section ">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_index_.ghomap.html#cacheused" class="tsd-kind-icon">cache<wbr>Used</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_index_.ghomap.html#isready" class="tsd-kind-icon">is<wbr>Ready</a></li>
 							</ul>
 						</section>
@@ -168,7 +170,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L102">index.ts:102</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L115">index.ts:115</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -195,12 +197,39 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="cacheonly" class="tsd-anchor"></a>
+					<h3>cache<wbr>Only</h3>
+					<div class="tsd-signature tsd-kind-icon">cache<wbr>Only<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L103">index.ts:103</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Use cache only, make the database not persistent.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>remarks</dt>
+							<dd><p>Deactivate this flag if you don&#39;t have enough RAM on your server</p>
+							</dd>
+							<dt>default</dt>
+							<dd><p><a href="https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Boolean" class="external">true</a></p>
+							</dd>
+							<dt>beta</dt>
+							<dd></dd>
+							<dt>experimental</dt>
+							<dd></dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="fetchallonstart" class="tsd-anchor"></a>
 					<h3>fetch<wbr>All<wbr>OnStart</h3>
 					<div class="tsd-signature tsd-kind-icon">fetch<wbr>All<wbr>OnStart<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L100">index.ts:100</a></li>
+							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L113">index.ts:113</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -223,7 +252,7 @@
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <a href="../modules/_index_.html#key" class="tsd-signature-type">Key</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L80">index.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L80">index.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -243,7 +272,7 @@
 					<div class="tsd-signature tsd-kind-icon">use<wbr>Cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L90">index.ts:90</a></li>
+							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L90">index.ts:90</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -266,7 +295,7 @@
 					<div class="tsd-signature tsd-kind-icon">instances<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="_index_.ghomap.html" class="tsd-signature-type">Ghomap</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Set&lt;Ghomap&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L45">index.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L45">index.ts:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -281,7 +310,7 @@
 					<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = path.join(utils.root, &quot;data&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L40">index.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L40">index.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -299,6 +328,29 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Accessors</h2>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="cacheused" class="tsd-anchor"></a>
+					<h3>cache<wbr>Used</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> cacheUsed<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L634">index.ts:634</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Check if the cache is used, returns <a href="_index_.ghomap.html#usecache">useCache</a> or <a href="_index_.ghomap.html#cacheonly">cacheOnly</a></p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if the cache is used</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
 					<a name="isready" class="tsd-anchor"></a>
 					<h3>is<wbr>Ready</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
@@ -308,7 +360,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L598">index.ts:598</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L625">index.ts:625</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -339,7 +391,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L215">index.ts:215</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L237">index.ts:237</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -362,7 +414,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L171">index.ts:171</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L189">index.ts:189</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -393,7 +445,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L181">index.ts:181</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L203">index.ts:203</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -415,7 +467,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L159">index.ts:159</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L177">index.ts:177</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -437,7 +489,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L264">index.ts:264</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L290">index.ts:290</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -478,7 +530,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L460">index.ts:460</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L486">index.ts:486</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -536,7 +588,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L549">index.ts:549</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L575">index.ts:575</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -559,7 +611,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L578">index.ts:578</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L604">index.ts:604</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -582,7 +634,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L566">index.ts:566</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L592">index.ts:592</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -605,7 +657,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L479">index.ts:479</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L505">index.ts:505</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -663,7 +715,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L505">index.ts:505</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L531">index.ts:531</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -721,7 +773,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L531">index.ts:531</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L557">index.ts:557</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -779,7 +831,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L389">index.ts:389</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L415">index.ts:415</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -836,7 +888,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L243">index.ts:243</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L269">index.ts:269</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -865,7 +917,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L204">index.ts:204</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L226">index.ts:226</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -894,7 +946,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L369">index.ts:369</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L395">index.ts:395</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -935,7 +987,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L411">index.ts:411</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L437">index.ts:437</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -999,7 +1051,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L133">index.ts:133</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L151">index.ts:151</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1034,7 +1086,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L324">index.ts:324</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L350">index.ts:350</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1075,7 +1127,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L281">index.ts:281</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L307">index.ts:307</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1118,7 +1170,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L189">index.ts:189</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L211">index.ts:211</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1140,7 +1192,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L228">index.ts:228</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L250">index.ts:250</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1172,7 +1224,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L345">index.ts:345</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L371">index.ts:371</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1213,7 +1265,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L435">index.ts:435</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L461">index.ts:461</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1271,7 +1323,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L303">index.ts:303</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L329">index.ts:329</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1316,7 +1368,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L63">index.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L63">index.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1347,7 +1399,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/b7369fd/src/index.ts#L53">index.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/CamilleAbella/Ghomap/blob/994b56a/src/index.ts#L53">index.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1393,6 +1445,9 @@
 								<a href="_index_.ghomap.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_index_.ghomap.html#cacheonly" class="tsd-kind-icon">cache<wbr>Only</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="_index_.ghomap.html#fetchallonstart" class="tsd-kind-icon">fetch<wbr>All<wbr>OnStart</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -1406,6 +1461,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
 								<a href="_index_.ghomap.html#path" class="tsd-kind-icon">path</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_index_.ghomap.html#cacheused" class="tsd-kind-icon">cache<wbr>Used</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="_index_.ghomap.html#isready" class="tsd-kind-icon">is<wbr>Ready</a>
