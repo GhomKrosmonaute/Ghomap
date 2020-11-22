@@ -30,6 +30,8 @@ export type Key = string
 
 /**
  * @class Ghomap
+ *
+ * A {@link JSON} version of {@link https://enmap.evie.dev/ Enmap}... Because why not.
  */
 class Ghomap<T = any> implements Options {
   /**
