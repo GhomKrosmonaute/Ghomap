@@ -13,8 +13,18 @@ import * as utils from "./utils"
 export interface Options {
   fetchAllOnStart?: boolean
   useCache?: boolean
-  name?: utils.Key
+  name?: Key
 }
+
+/**
+ * The valid format of key in database
+ *
+ * @remarks
+ * Min length: `4` <br>
+ * Max length: `64` <br>
+ * Regex pattern: `/^[^\s]+$/`
+ */
+export type Key = string
 
 /**
  * @class Ghomap
@@ -49,7 +59,7 @@ class Ghomap<T = any> implements Options {
    * @param callback - In case of you need custom logs
    */
   static async openAll(
-    callback?: (name: utils.Key, key: utils.Key, value: any) => unknown
+    callback?: (name: Key, key: Key, value: any) => unknown
   ): Promise<void> {
     for (const ghomap of this.instances.values()) {
       await ghomap.open((key, value) => {
@@ -58,14 +68,14 @@ class Ghomap<T = any> implements Options {
     }
   }
 
-  private cache = new Map<utils.Key, T>()
+  private cache = new Map<Key, T>()
 
   /**
    * The name of database in case of using multiple databases
    *
    * @default {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/String "default"}
    */
-  public name: utils.Key
+  public name: Key
 
   /**
    * Activate cache to get data quickly
@@ -94,7 +104,7 @@ class Ghomap<T = any> implements Options {
    *
    * @param options - The {@link name} of your database or {@link Options options}
    */
-  constructor(options: Options | utils.Key = "default") {
+  constructor(options: Options | Key = "default") {
     if (typeof options === "string") {
       utils.validateKey(options)
       this.name = options
@@ -118,9 +128,7 @@ class Ghomap<T = any> implements Options {
    *
    * @param callback
    */
-  public async open(
-    callback?: (key: utils.Key, value: T) => unknown
-  ): Promise<void> {
+  public async open(callback?: (key: Key, value: T) => unknown): Promise<void> {
     await utils.ensureDir(Ghomap.path)
     await utils.ensureDir(this.path)
     if (this.fetchAllOnStart && this.useCache) {
@@ -156,7 +164,7 @@ class Ghomap<T = any> implements Options {
    * @param key - The key of data you want delete
    */
   @utils.checkReady()
-  public async delete(key: utils.Key): Promise<void> {
+  public async delete(key: Key): Promise<void> {
     if (!fs.existsSync(this.filepath(key))) return
     await fsp.unlink(this.filepath(key))
     if (this.useCache) this.cache.delete(key)
@@ -189,7 +197,7 @@ class Ghomap<T = any> implements Options {
    * @returns True if the key exists in database
    */
   @utils.checkReady()
-  public has(key: utils.Key): boolean {
+  public has(key: Key): boolean {
     if (this.useCache) return this.cache.has(key)
     return fs.existsSync(this.filepath(key))
   }
@@ -213,7 +221,7 @@ class Ghomap<T = any> implements Options {
    * @returns The data put
    */
   @utils.checkReady()
-  public async set(key: utils.Key, data: T): Promise<T> {
+  public async set(key: Key, data: T): Promise<T> {
     utils.validateKey(key)
     const raw = utils.stringify(data)
     await fsp.writeFile(this.filepath(key), raw, "utf-8")
@@ -228,7 +236,7 @@ class Ghomap<T = any> implements Options {
    * @returns The data or {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/null null}
    */
   @utils.checkReady()
-  public async get(key: utils.Key): Promise<T | null> {
+  public async get(key: Key): Promise<T | null> {
     utils.validateKey(key)
     if (this.useCache) return this.cache.get(key) ?? null
     if (!fs.existsSync(this.filepath(key))) return null
@@ -249,7 +257,7 @@ class Ghomap<T = any> implements Options {
    * ```
    */
   @utils.checkReady()
-  public async ensure(key: utils.Key, defaultValue: T): Promise<T> {
+  public async ensure(key: Key, defaultValue: T): Promise<T> {
     const data = await this.get(key)
     return data ?? (await this.set(key, defaultValue))
   }
@@ -266,7 +274,7 @@ class Ghomap<T = any> implements Options {
    * ```
    */
   @utils.checkReady()
-  public async push<I = any>(key: utils.Key, ...items: I[]): Promise<I[]> {
+  public async push<I = any>(key: Key, ...items: I[]): Promise<I[]> {
     const data = await this.get(key)
     if (data instanceof Array) {
       data.push(...items)
@@ -288,7 +296,7 @@ class Ghomap<T = any> implements Options {
    * @returns The un-shifted item
    */
   @utils.checkReady()
-  public async unshift<I = any>(key: utils.Key, item: I): Promise<I> {
+  public async unshift<I = any>(key: Key, item: I): Promise<I> {
     const data = await this.get(key)
     if (data instanceof Array) {
       data.unshift(item)
@@ -309,7 +317,7 @@ class Ghomap<T = any> implements Options {
    * @returns The item pop
    */
   @utils.checkReady()
-  public async pop<I = any>(key: utils.Key): Promise<I> {
+  public async pop<I = any>(key: Key): Promise<I> {
     const data = await this.get(key)
     if (data instanceof Array) {
       const pop = data.pop()
@@ -330,7 +338,7 @@ class Ghomap<T = any> implements Options {
    * @returns The item shift
    */
   @utils.checkReady()
-  public async shift<I = any>(key: utils.Key): Promise<I> {
+  public async shift<I = any>(key: Key): Promise<I> {
     const data = await this.get(key)
     if (data instanceof Array) {
       const shift = data.shift()
@@ -354,7 +362,7 @@ class Ghomap<T = any> implements Options {
    * @returns True if item is includes in {@link Array} data
    */
   @utils.checkReady()
-  public async includes(key: utils.Key, item: any): Promise<boolean> {
+  public async includes(key: Key, item: any): Promise<boolean> {
     const data = await this.get(key)
     if (data instanceof Array) {
       return data.includes(item)
@@ -375,7 +383,7 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async forEach(
-    callback: (data: T, key: utils.Key) => unknown
+    callback: (data: T, key: Key) => unknown
   ): Promise<void> {
     const entries = this.useCache ? this.cache : await this.fetchAll()
     for (const [key, data] of [...entries]) {
@@ -397,7 +405,7 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async map<R>(
-    callback: (data: T, key: utils.Key) => R | Promise<R>
+    callback: (data: T, key: Key) => R | Promise<R>
   ): Promise<R[]> {
     const entries = this.useCache ? this.cache : await this.fetchAll()
     const output: R[] = []
@@ -421,7 +429,7 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async some(
-    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
+    callback: (data: T, key: Key) => boolean | Promise<boolean>
   ): Promise<boolean> {
     const entries = this.useCache ? this.cache : await this.fetchAll()
     for (const [key, data] of [...entries]) {
@@ -446,7 +454,7 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async every(
-    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
+    callback: (data: T, key: Key) => boolean | Promise<boolean>
   ): Promise<boolean> {
     return !(await this.some(callback))
   }
@@ -465,10 +473,10 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async filter(
-    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
-  ): Promise<Map<utils.Key, T>> {
+    callback: (data: T, key: Key) => boolean | Promise<boolean>
+  ): Promise<Map<Key, T>> {
     const entries = this.useCache ? this.cache : await this.fetchAll()
-    const output = new Map<utils.Key, T>()
+    const output = new Map<Key, T>()
     for (const [key, data] of [...entries]) {
       if (await callback(data, key)) {
         output.set(key, data)
@@ -491,7 +499,7 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async filterArray(
-    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
+    callback: (data: T, key: Key) => boolean | Promise<boolean>
   ): Promise<T[]> {
     const entries = this.useCache ? this.cache : await this.fetchAll()
     const output: T[] = []
@@ -517,7 +525,7 @@ class Ghomap<T = any> implements Options {
    */
   @utils.checkReady()
   public async find(
-    callback: (data: T, key: utils.Key) => boolean | Promise<boolean>
+    callback: (data: T, key: Key) => boolean | Promise<boolean>
   ): Promise<T | null> {
     const entries = this.useCache ? this.cache : await this.fetchAll()
     for (const [key, data] of [...entries]) {
@@ -534,9 +542,9 @@ class Ghomap<T = any> implements Options {
    * @returns All fetched data as {@link Map}
    */
   @utils.checkReady()
-  public fetchAll(): Promise<Map<utils.Key, T>> {
+  public fetchAll(): Promise<Map<Key, T>> {
     return this.fetchKeys().then(async (keys) => {
-      const entries = new Map<utils.Key, T>()
+      const entries = new Map<Key, T>()
       for (const key of keys) {
         const data = await this.get(key)
         if (data !== null) entries.set(key, data)
@@ -563,9 +571,9 @@ class Ghomap<T = any> implements Options {
    * @returns All fetched keys
    */
   @utils.checkReady()
-  public fetchKeys(): Promise<utils.Key[]> {
+  public fetchKeys(): Promise<Key[]> {
     return fsp.readdir(this.path).then(async (filenames) => {
-      const keys: utils.Key[] = []
+      const keys: Key[] = []
       for (const filename of filenames) {
         if (filename.endsWith(".json")) {
           keys.push(path.basename(filename, ".json"))

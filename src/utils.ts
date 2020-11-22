@@ -1,5 +1,6 @@
 import fs from "fs"
 import fsp from "fs/promises"
+import { Key } from "./index"
 
 export const root = process.cwd()
 
@@ -21,10 +22,8 @@ export function parse<T>(raw: string): T {
   return JSON.parse(raw)
 }
 
-export type Key = string
-
 export function validateKey(key: string): key is Key {
-  if (/^[^\s]+$/.test(key) && key.length > 3 && key.length < 64) return true
+  if (/^[^\s]+$/.test(key) && key.length > 3 && key.length < 65) return true
   else throw new Error("invalid provided key")
 }
 

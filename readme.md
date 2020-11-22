@@ -47,10 +47,10 @@ const db = new Ghomap<number>()
 
 db.open().then(async () => {
   // set value
-  db.set("key", 42)
+  await db.set("key", 42)
 
   // get value
-  const value = db.get("key")
+  const value = await db.get("key")
 
   console.log(value)
   // output => 42
@@ -63,21 +63,27 @@ db.open().then(async () => {
 import Ghomap from "ghomap"
 
 const users = new Ghomap<User>("users")
-const cooldowns = new Ghomap<number>("cooldowns")
+const numbers = new Ghomap<number[]>("numbers")
 const descriptions = new Ghomap<string>("descriptions")
 
 Ghomap.openAll().then(async () => {
-  // add value
-  users.set(userId, {
+  // set value
+  await users.set(userId, {
     name: "bob",
     age: 42,
   })
 
-  // get value
-  const value = db.get("key")
+  // ensure array value
+  let list = await numbers.ensure("list", [42])
 
-  console.log(value)
-  // output => 42
+  console.log(list)
+  // output => [42]
+
+  // push in arrray value
+  await numbers.push("list", 66, 33)
+
+  console.log(await numbers.get("list"))
+  // output => [42, 66, 33]
 })
 ```
 
