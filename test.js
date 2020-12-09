@@ -1,6 +1,6 @@
 const fs = require("fs")
 const path = require("path")
-const Ghomap = require("./dist/index")
+const Ghomap = require("./dist/Ghomap")
 
 const db = new Ghomap()
 
@@ -77,6 +77,12 @@ test("set and get array data", async () => {
   await db.pop("array")
 
   expect(await db.includes("array", 66)).toBe(false)
+})
+
+test("asynchronous writing", async () => {
+  for (let i = 0; i < 1000; i++) db.set("async", i)
+
+  expect(await db.get("async")).toBe(999)
 })
 
 test("destroy database", async () => {

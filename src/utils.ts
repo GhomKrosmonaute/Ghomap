@@ -1,6 +1,6 @@
 import fs from "fs"
 import fsp from "fs/promises"
-import { Key } from "./index"
+import { Key } from "./Ghomap"
 
 export const root = process.cwd()
 
@@ -49,6 +49,6 @@ export function checkReady() {
 
 export class TargetTypeError extends TypeError {
   constructor(functionName: string) {
-    super(`the ${functionName}() function must bu used on Array data.`)
+    super(`the ${functionName}() function must be used on Array data.`)
   }
 }

@@ -31,7 +31,8 @@ export type Key = string
 /**
  * @class Ghomap
  *
- * A {@link JSON} version of {@link https://enmap.evie.dev/ Enmap}... Because why not.
+ * @description A {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/JSON JSON} version of {@link https://enmap.evie.dev/ Enmap}... Because why not.
+ * @comment If {@link https://enmap.evie.dev/ Enmap} works, use {@link https://enmap.evie.dev/ Enmap} instead!
  */
 class Ghomap<T = any> implements Options {
   /**
@@ -117,7 +118,7 @@ class Ghomap<T = any> implements Options {
   private ready: boolean = false
 
   /**
-   * Create local database, add created database in {@link Ghomap.instances Ghomap instances}
+   * Create local database, add created database in {@link Ghomap.instances Ghomap instances}.
    *
    * @param options - The {@link name} of your database or {@link Options options}
    */
@@ -251,13 +252,11 @@ class Ghomap<T = any> implements Options {
   @utils.checkReady()
   public async set(key: Key, data: T): Promise<T> {
     utils.validateKey(key)
-    if (this.cacheOnly) {
+    if (this.cacheOnly || this.useCache) {
       this.cache.set(key, data)
-      return data
+      if (this.cacheOnly) return data
     }
-    const raw = utils.stringify(data)
-    await fsp.writeFile(this.filepath(key), raw, "utf-8")
-    if (this.useCache) this.cache.set(key, data)
+    await this.write(key, data)
     return data
   }
 
@@ -295,7 +294,8 @@ class Ghomap<T = any> implements Options {
   }
 
   /**
-   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/push <Array>.push} method for {@link Array} data
+   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/push <Array>.push}
+   * method for {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array} data
    *
    * @param key
    * @param items
@@ -317,7 +317,8 @@ class Ghomap<T = any> implements Options {
   }
 
   /**
-   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/unshift <Array>.unshift} method for {@link Array} data
+   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/unshift <Array>.unshift}
+   * method for {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array} data
    *
    * @example ```js
    * await ghomap.unshift("my-array", 42)
@@ -339,7 +340,8 @@ class Ghomap<T = any> implements Options {
   }
 
   /**
-   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/pop <Array>.pop} method for {@link Array} data
+   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/pop <Array>.pop}
+   * method for {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array} data
    *
    * @example ```js
    * const pop = await ghomap.pop("my-array")
@@ -360,7 +362,8 @@ class Ghomap<T = any> implements Options {
   }
 
   /**
-   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/shift <Array>.shift} method for {@link Array} data
+   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/shift <Array>.shift}
+   * method for {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array} data
    *
    * @example ```js
    * const shift = await ghomap.shift("my-array")
@@ -381,7 +384,8 @@ class Ghomap<T = any> implements Options {
   }
 
   /**
-   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/includes <Array>.includes} method for {@link Array} data
+   * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/includes <Array>.includes}
+   * method for {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array} data
    *
    * @example ```js
    * if(await ghomap.includes("my-array", 42)){
@@ -391,7 +395,7 @@ class Ghomap<T = any> implements Options {
    *
    * @param key
    * @param item
-   * @returns True if item is includes in {@link Array} data
+   * @returns True if item is includes in {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array} data
    */
   @utils.checkReady()
   public async includes(key: Key, item: any): Promise<boolean> {
@@ -501,7 +505,7 @@ class Ghomap<T = any> implements Options {
    * ```
    *
    * @param callback
-   * @returns The filtered data as {@link Map}
+   * @returns The filtered data as {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Map Map}
    */
   @utils.checkReady()
   public async filter(
@@ -527,7 +531,7 @@ class Ghomap<T = any> implements Options {
    * ```
    *
    * @param callback
-   * @returns The filtered data as {@link Array}
+   * @returns The filtered data as {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array}
    */
   @utils.checkReady()
   public async filterArray(
@@ -571,7 +575,7 @@ class Ghomap<T = any> implements Options {
   /**
    * Fetch all data from disk, update the cache if {@link useCache} flag is set to `true`
    *
-   * @returns All fetched data as {@link Map}
+   * @returns All fetched data as {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Map Map}
    */
   @utils.checkReady()
   public fetchAll(): Promise<Map<Key, T>> {
@@ -588,7 +592,7 @@ class Ghomap<T = any> implements Options {
   /**
    * Fetch all data from disk, update the cache if {@link useCache} flag is set to `true`
    *
-   * @returns All fetched data as {@link Array}
+   * @returns All fetched data as {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array}
    */
   @utils.checkReady()
   public fetchValues(): Promise<T[]> {
@@ -643,6 +647,26 @@ class Ghomap<T = any> implements Options {
 
   private filepath(key: string): string {
     return path.join(this.path, key) + ".json"
+  }
+
+  private waiting = new Map<Key, T>()
+
+  private async write(key: Key, data: T): Promise<void> {
+    if (!this.waiting.has(key)) {
+      this.waiting.set(key, data)
+      const written = utils.stringify(data)
+      await fsp.writeFile(this.filepath(key), written, "utf-8")
+      if (
+        this.waiting.has(key) &&
+        utils.stringify(this.waiting.get(key)) !== written
+      ) {
+        return this.write(key, this.waiting.get(key) as T)
+      } else {
+        this.waiting.delete(key)
+      }
+    } else {
+      this.waiting.set(key, data)
+    }
   }
 }
 
