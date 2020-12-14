@@ -384,6 +384,29 @@ class Ghomap<T = any> implements Options {
   }
 
   /**
+   * Remove an item from an {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array} data
+   *
+   * @example ```js
+   * const removed = await ghomap.remove("my-array", "item")
+   * ```
+   *
+   * @param key
+   * @param item
+   * @returns The item was removed
+   */
+  @utils.checkReady()
+  public async remove<I = any>(key: Key, item: I): Promise<I | null> {
+    const data = await this.get(key)
+    if (data instanceof Array) {
+      const index = data.indexOf(item)
+      if (index !== -1) data.splice(index, 1)
+      await this.set(key, data)
+      return index === -1 ? null : item
+    }
+    throw new utils.TargetTypeError("shift")
+  }
+
+  /**
    * Similar to {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/includes <Array>.includes}
    * method for {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array Array} data
    *
