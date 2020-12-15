@@ -399,11 +399,13 @@ class Ghomap<T = any> implements Options {
     const data = await this.get(key)
     if (data instanceof Array) {
       const index = data.indexOf(item)
-      if (index !== -1) data.splice(index, 1)
-      await this.set(key, data)
+      if (index !== -1) {
+        data.splice(index, 1)
+        await this.set(key, data)
+      }
       return index === -1 ? null : item
     }
-    throw new utils.TargetTypeError("shift")
+    throw new utils.TargetTypeError("remove")
   }
 
   /**
