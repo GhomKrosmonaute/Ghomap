@@ -17,7 +17,6 @@
     "prettier": "prettier src test.js jest.config.js package.json readme.md tsconfig.json --write",
     "build": "del-cli dist/** -d && tsc && npm run build:docs",
     "build:docs": "del-cli docs/** -d && typedoc --excludeNotDocumented --exclude src/utils.ts --name \"Ghomap Librairy\" --out docs/ src/",
-    "prepublish": "npm run prettier && npm test",
     "deploy": "git reset --hard && git pull && npm i && npm run build && pm2 restart ghomap",
     "serve": "npm run build:docs && node serve",
     "test": "npm run build && jest"
